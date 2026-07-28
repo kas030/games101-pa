@@ -1,0 +1,51 @@
+# CMake build directories
+**/build/
+**/build-*/
+**/cmake-build-*/
+
+# Shared dependencies downloaded by FetchContent
+/.deps/
+
+# CMake generated files (in case of an accidental in-source build)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+compile_commands.json
+
+# Compiled objects, libraries, and executables
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.pdb
+*.ilk
+
+# IDE and editor-local settings
+.vscode/
+.idea/
+.vs/
+*.user
+*.suo
+
+# Downloaded archives
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*~
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
