@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "Triangle.hpp"
 #include "rasterizer.hpp"
 #include <Eigen/Eigen>
@@ -6,46 +8,59 @@
 
 constexpr double MY_PI = 3.1415926;
 
-Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
-{
+Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos) {
     Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
 
     Eigen::Matrix4f translate;
-    translate << 1, 0, 0, -eye_pos[0], 0, 1, 0, -eye_pos[1], 0, 0, 1,
-        -eye_pos[2], 0, 0, 0, 1;
+    translate << 1, 0, 0, -eye_pos[0], 0, 1, 0, -eye_pos[1], 0, 0, 1, -eye_pos[2], 0, 0, 0, 1;
 
     view = translate * view;
 
     return view;
 }
 
-Eigen::Matrix4f get_model_matrix(float rotation_angle)
-{
+Eigen::Matrix4f get_model_matrix(float rotation_angle) {
     Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
 
-    // TODO: Implement this function
-    // Create the model matrix for rotating the triangle around the Z axis.
-    // Then return it.
+    float ra_rad = M_PI * rotation_angle / 180;
+    float cos_ra = std::cos(ra_rad);
+    float sin_ra = std::sin(ra_rad);
+
+    model(0, 0) = cos_ra;
+    model(0, 1) = -sin_ra;
+    model(1, 0) = sin_ra;
+    model(1, 1) = cos_ra;
 
     return model;
 }
 
-Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
-                                      float zNear, float zFar)
-{
+Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar) {
     // Students will implement this function
 
     Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
 
-    // TODO: Implement this function
-    // Create the projection matrix for the given parameters.
-    // Then return it.
+    Eigen::Matrix4f persp_ortho;
+    const float n = zNear, f = zFar;
+    persp_ortho << n, 0, 0, 0, 0, n, 0, 0, 0, 0, n + f, -n * f, 0, 0, 1, 0;
+
+    Eigen::Matrix4f ortho_t = Eigen::Matrix4f::Identity();
+    ortho_t(2, 3) = -(n + f) / 2;
+
+    Eigen::Matrix4f ortho_s;
+
+    const float fov_rad = M_PI * eye_fov / 180;
+    const float t = n * std::tan(fov_rad / 2);
+    const float r = aspect_ratio * t;
+    ortho_s << 1 / r, 0, 0, 0, 0, 1 / t, 0, 0, 0, 0, 2 / (n - f), 0, 0, 0, 0, 1;
+
+    Eigen::Matrix4f ortho = ortho_s * ortho_t;
+
+    projection = ortho * persp_ortho;
 
     return projection;
 }
 
-int main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     float angle = 0;
     bool command_line = false;
     std::string filename = "output.png";
@@ -55,9 +70,7 @@ int main(int argc, const char** argv)
         angle = std::stof(argv[2]); // -r by default
         if (argc == 4) {
             filename = std::string(argv[3]);
-        }
-        else
-            return 0;
+        } else return 0;
     }
 
     rst::rasterizer r(700, 700);
@@ -108,8 +121,7 @@ int main(int argc, const char** argv)
 
         if (key == 'a') {
             angle += 10;
-        }
-        else if (key == 'd') {
+        } else if (key == 'd') {
             angle -= 10;
         }
     }
