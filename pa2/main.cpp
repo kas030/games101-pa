@@ -1,4 +1,5 @@
 // clang-format off
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "rasterizer.hpp"
@@ -30,8 +31,27 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
 
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
 {
-    // TODO: Copy-paste your implementation from the previous assignment.
     Eigen::Matrix4f projection;
+
+    Eigen::Matrix4f persp_ortho;
+    const float n = -zNear, f = -zFar;
+    persp_ortho << n, 0, 0, 0, 0, n, 0, 0, 0, 0, n + f, -n * f, 0, 0, 1, 0;
+
+    Eigen::Matrix4f ortho_t = Eigen::Matrix4f::Identity();
+    ortho_t(2, 3) = -(n + f) / 2;
+
+    Eigen::Matrix4f ortho_s;
+
+    const float fov_rad = M_PI * eye_fov / 180;
+    const float t = std::abs(n) * std::tan(fov_rad / 2);
+    const float r = aspect_ratio * t;
+    // Notice that the z value is positive in this PA
+    // so here is (f - n)
+    ortho_s << 1 / r, 0, 0, 0, 0, 1 / t, 0, 0, 0, 0, 2 / (f - n), 0, 0, 0, 0, 1;
+
+    Eigen::Matrix4f ortho = ortho_s * ortho_t;
+
+    projection = ortho * persp_ortho;
 
     return projection;
 }
