@@ -29,3 +29,7 @@ cmake --build pa1/build --config Release
 程序运行时需要能找到随 OpenCV 生成的动态库。当前 CMake 配置会在常用的
 单配置构建中把程序和动态库放到 `pa1/build/bin`，因此应直接从该目录运行生成的
 程序。
+
+```powershell
+./pa1/build/bin/Rasterizer.exe
+```
