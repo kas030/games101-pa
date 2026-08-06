@@ -33,3 +33,9 @@ cmake --build pa1/build --config Release
 ```powershell
 ./pa1/build/bin/Rasterizer.exe
 ```
+
+生成旋转固定角度的图像：
+
+```powershell
+./pa1/build/bin/Rasterizer.exe -r 20 image.png
+```
